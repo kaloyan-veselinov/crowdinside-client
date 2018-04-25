@@ -1,5 +1,6 @@
 package com.kaloyanveselinov.crowdinsideclient;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -11,6 +12,7 @@ import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
+    LoggerService loggingService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,10 +20,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         Boolean isLogging = sharedPreferences.getBoolean(getString(R.string.log_key), false);
-
-
+        if (isLogging) LoggerService.startLogging(this);
+        final Context context = this;
 
         FloatingActionButton fab = findViewById(R.id.fab);
         informLogging(isLogging, fab);
@@ -30,22 +33,14 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 Boolean isLogging = sharedPreferences.getBoolean(getString(R.string.log_key), false);
+                if (isLogging) LoggerService.startLogging(context);
                 editor.putBoolean("log", !isLogging);
                 editor.apply();
                 informLogging(!isLogging, view);
             }
         });
 
-//        setupSharedPreferences();
     }
-
-//    private void setupSharedPreferences() {
-//        mLogger.setLogWifi(sharedPreferences.getBoolean(getString(R.string.log_wifi), false));
-//        mLogger.setLogAccelerometer(sharedPreferences.getBoolean(getString(R.string.log_acc), false));
-//        mLogger.setLogMagnetometer(sharedPreferences.getBoolean(getString(R.string.log_magn), false));
-//        mLogger.setLogGyroscope(sharedPreferences.getBoolean(getString(R.string.log_gyro), false));
-//        mLogger.setLogGPS(sharedPreferences.getBoolean(getString(R.string.log_gps), false));
-//    }
 
     private void informLogging(Boolean isLogging, View view){
         if (isLogging)
