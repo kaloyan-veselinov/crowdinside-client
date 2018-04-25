@@ -16,17 +16,20 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                Boolean isLogging = sharedPreferences.getBoolean(getString(R.string.log_key), false);
+                editor.putBoolean("log", !isLogging);
+                editor.apply();
                 // TODO add sharedPreferences inversion
-                if(sharedPreferences.getBoolean(getString(R.string.log_key), false))
+                if (!isLogging)
                     Snackbar.make(view, R.string.logging, Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 else
@@ -45,4 +48,6 @@ public class MainActivity extends AppCompatActivity {
 //        mLogger.setLogGyroscope(sharedPreferences.getBoolean(getString(R.string.log_gyro), false));
 //        mLogger.setLogGPS(sharedPreferences.getBoolean(getString(R.string.log_gps), false));
 //    }
+
+
 }
