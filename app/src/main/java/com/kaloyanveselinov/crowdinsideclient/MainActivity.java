@@ -1,6 +1,7 @@
 package com.kaloyanveselinov.crowdinsideclient;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -11,8 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
-    SharedPreferences sharedPreferences;
-    LoggerService loggingService;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,10 +21,10 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        Boolean isLogging = sharedPreferences.getBoolean(getString(R.string.log_key), false);
-        if (isLogging) LoggerService.startLogging(this);
+        final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         final Context context = this;
+
+        Boolean isLogging = sharedPreferences.getBoolean(getString(R.string.log_key), false);
 
         FloatingActionButton fab = findViewById(R.id.fab);
         informLogging(isLogging, fab);
@@ -33,7 +33,11 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 Boolean isLogging = sharedPreferences.getBoolean(getString(R.string.log_key), false);
-                if (isLogging) LoggerService.startLogging(context);
+
+                // TODO launch dataCollecionService in a new thread
+                Intent intent = new Intent(context, DataCollectionService.class);
+                if (!isLogging) startService(intent);
+                else stopService(intent);
                 editor.putBoolean("log", !isLogging);
                 editor.apply();
                 informLogging(!isLogging, view);
